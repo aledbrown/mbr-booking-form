@@ -10,8 +10,11 @@ class BookingForm extends Form
 {
     public ?Booking $booking;
 
+    // COMPUTED FIELDS
     public $hotel_name;
     public $room_type_name;
+    public $check_out_date;
+    // USER FIELDS
     #[Validate]
     public $hotel_id;
     #[Validate]
@@ -19,17 +22,20 @@ class BookingForm extends Form
     #[Validate]
     public $check_in_date;
     #[Validate]
-    public $check_out_date;
-    #[Validate]
     public $num_nights;
     #[Validate]
     public $num_rooms;
     #[Validate]
-    public $num_pax;
+    public int $num_pax = 1;
     #[Validate]
     public $notes;
     #[Validate]
     public $total_cost;
+
+    public function mount()
+    {
+        $this->num_pax = 1;
+    }
 
     protected function rules()
     {
@@ -37,7 +43,6 @@ class BookingForm extends Form
             'hotel_id' => 'required',
             'room_type_id' => 'required',
             'check_in_date' => 'required',
-            'check_out_date' => 'required',
             'num_nights' => 'required',
             'num_rooms' => 'required',
             'num_pax' => 'required|integer|min:1',
@@ -51,6 +56,8 @@ class BookingForm extends Form
         $this->validate();
 
         Booking::create($this->only([
+            'hotel_name',
+            'room_type_name',
             'hotel_id',
             'room_type_id',
             'check_in_date',
