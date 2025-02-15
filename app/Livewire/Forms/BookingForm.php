@@ -74,4 +74,11 @@ class BookingForm extends Form
     {
         $this->booking = $booking;
     }
+
+    public function updatedHotelId()
+    {
+        dd('updated');
+        $this->form->hotel_name = 'Test';
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Forms\BookingForm;
+use App\Models\Booking;
 use App\Models\Hotel;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -19,7 +20,14 @@ class BookingComponent extends Component
     {
         // $this->form->num_pax = 4;
         $this->hotelDropdown = Hotel::all();
-        dump($this->hotelDropdown);
+        // dump($this->hotelDropdown);
+    }
+
+    public function save()
+    {
+        $this->form->store();
+
+        return $this->redirect('/test'); // TODO: thank you page
     }
 
     public function render()

@@ -32,7 +32,7 @@
                     </div>
 
                     <div class="w-full flex space-x-4 mt-4">
-                        <x-mary-button wire:click="testButton">Test Button</x-mary-button>
+                        <x-mary-button class="btn btn-accent text-white" type="submit">Submit Booking</x-mary-button>
                         <x-mary-button wire:click="testButton">Toast test</x-mary-button>
                     </div>
                 </div>
