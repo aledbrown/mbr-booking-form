@@ -10,6 +10,11 @@ class HotelSeeder extends Seeder
 {
     public function run(): void
     {
+
+        if ($this->isDataAlreadyGiven()) {
+            return;
+        }
+
         $hotelData = [];
 
         $hotelData[] = [
@@ -69,5 +74,12 @@ class HotelSeeder extends Seeder
             }
         }
 
+    }
+
+    private function isDataAlreadyGiven(): bool
+    {
+        return Hotel::where('name', 'Sunshine Beach Hotel')->exists()
+            && Hotel::where('name', 'Highland Retreat')->exists()
+            && Hotel::where('name', 'Low Wood Hotel')->exists();
     }
 }

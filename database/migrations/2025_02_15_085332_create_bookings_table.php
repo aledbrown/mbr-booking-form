@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->string('hotel_name');
+            $table->string('room_type_name');
             $table->foreignIdFor(\App\Models\Hotel::class);
             $table->foreignIdFor(\App\Models\RoomType::class);
             $table->date('check_in_date');
