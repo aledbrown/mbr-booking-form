@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('num_nights');
             $table->integer('num_rooms');
             $table->integer('num_pax');
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->bigInteger('total_cost');
             $table->timestamps();
         });

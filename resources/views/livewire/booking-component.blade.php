@@ -13,7 +13,7 @@
                             <p class="mb-3 text-sm text-gray-700">Please use the form below to book your hotel:</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <x-mary-select class="text-lg leading-loose" wire:model.live="hotel_id" label="Hotel Name:" required
                                            option-value="id"
@@ -39,10 +39,9 @@
                                     'mode' => 'range',
                                     'minDate' => 'today',
                                     'dateFormat' => 'Y-m-d',
-                                    'altInput' => true,
                                 ];
                             @endphp
-                            <x-mary-datepicker wire:model.lazy="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" required />
+                            <x-mary-datepicker wire:model.live.debounce="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" required />
                         </div>
 
                         <div>
@@ -60,7 +59,7 @@
                             <x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />
                         </div>
 
-                        <div class="col-span-2">
+                        <div class="md:col-span-2">
                             <label class="pt-0 label label-text font-semibold">
                                 <span>Notes:
                                     @if($this->num_pax>1)
@@ -73,7 +72,7 @@
 
                     </div>
 
-                    <div class="w-full flex space-x-4 mt-4">
+                    <div class="mt-4">
                         <x-mary-errors class="bg-primary text-primary-content"  title="Oops!" description="There were some issues with your submission, please scroll up to fix them." icon="o-face-frown" :errors="$errors" />
                     </div>
 
@@ -95,6 +94,7 @@
                 <h1 class="font-bold">Debug Info</h1>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <p>Selected hotel: {{ $this->hotel_name }} [{{ $this->hotel_id }}]</p>
+                    <p>Room Type: {{ $this->room_type_name }} [{{ $this->room_type_id }}]</p>
                     @if(isset($this->num_pax))<p>Number of pax: {{ $this->num_pax }}</p>@endif
                     <p>Selected date range: {{ $this->selected_date_range }}</p>
                     <p>AlpineSelected date range: <span x-text="$wire.selected_date_range"></span> </p>

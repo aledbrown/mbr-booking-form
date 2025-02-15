@@ -30,7 +30,7 @@ class BookingComponent extends Component
     public int $hotel_id = 0;
     #[Validate]
     public $room_type_id;
-    // #[Validate]
+    #[Validate]
     public $check_in_date;
     #[Validate]
     public int $num_nights = 1;
@@ -41,11 +41,15 @@ class BookingComponent extends Component
     #[Validate]
     public $notes;
     // #[Validate]
-    public $total_cost;
+    public $total_cost = 0;
 
     public function mount()
     {
         $this->hotelDropdown = Hotel::all();
+        if (app()->environment() !== 'local') $this->showDebug = false;
+        $this->check_in_date = today()->toDateString();
+        $this->check_out_date = today()->addDays(1)->toDateString();
+        $this->selected_date_range = today()->toDateString().' to '.today()->addDays(1)->toDateString();
     }
 
     public function render()
@@ -57,7 +61,6 @@ class BookingComponent extends Component
     {
         $rules = $this->rules();
         $validation = $this->validate($rules);
-        // dump($validation);
 
         Booking::create($this->only([
             'hotel_name',
@@ -79,22 +82,23 @@ class BookingComponent extends Component
     public function rules()
     {
         return [
-            // 'hotel_name' => 'required|string|max:255',
+            'hotel_name' => ['string', 'max:255', [Rule::requiredIf(fn() => $this->hotel_id > 0)]],
+            'room_type_name' => ['string', 'max:255', [Rule::requiredIf(fn() => $this->room_type_id > 0)]],
             'hotel_id' => 'required|numeric|gt:0',
             'room_type_id' => 'required|numeric|gt:0',
-            // 'check_in_date' => 'required',
-            // 'num_nights' => 'required',
+            'check_in_date' => 'required|date|after:yesterday',
+            'check_out_date' => ['date', 'after:check_in_date', [Rule::requiredIf(fn() => isset($this->check_in_date))]],
+            'num_nights' => 'required|numeric|min:1|max:7',
             'num_rooms' => 'required|numeric|min:1|max:2',
             'num_pax' => 'required|numeric|min:1|max:5',
-            'notes' => [Rule::requiredIf(function () {
-                return $this->num_pax > 1;
-            })],
+            'notes' => [Rule::requiredIf(fn() => $this->num_pax > 1)],
             // 'total_cost' => 'required',
         ];
     }
 
     protected $messages = [
-        // 'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
+        'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
+        'room_type_name' => 'ERROR: Room Type Name fail, please contact us for support.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
         'room_type_id' => 'Please select a Room Type from the dropdown.',
         'notes' => 'Please provide notes when the Number of Pax is greater than 1.',
@@ -109,6 +113,12 @@ class BookingComponent extends Component
             $rooms = RoomType::query()->where('hotel_id', $value)->get();
             $this->roomTypeDropdown = $rooms;
         }
+    }
+
+    public function updatedRoomTypeId($value) : void
+    {
+        $room = RoomType::find($value);
+        if ($room) $this->room_type_name = $room->name;
     }
 
     public function updatedSelectedDateRange($value) : void
