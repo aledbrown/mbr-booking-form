@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Booking;
 use App\Models\Hotel;
+use App\Models\RoomType;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -16,15 +17,17 @@ class BookingComponent extends Component
 
     // COMPUTED PROPERTIES
     public Collection $hotelDropdown;
+    public Collection $roomTypeDropdown;
     public $hotel_name = '';
     public $room_type_name = '';
+    public $selected_date_range = '';
     public $check_out_date;
 
     // USER FORM DATA
     // #[Validate('required')]
     #[Validate]
     public int $hotel_id = 0;
-    // #[Validate]
+    #[Validate]
     public $room_type_id;
     // #[Validate]
     public $check_in_date;
@@ -55,7 +58,7 @@ class BookingComponent extends Component
     {
         $rules = $this->rules();
         $validation = $this->validate($rules);
-        dump($validation);
+        // dump($validation);
 
         Booking::create($this->only([
             'hotel_name',
@@ -79,7 +82,7 @@ class BookingComponent extends Component
         return [
             // 'hotel_name' => 'required|string|max:255',
             'hotel_id' => 'required|numeric|gt:0',
-            // 'room_type_id' => 'required',
+            'room_type_id' => 'required|numeric|gt:0',
             // 'check_in_date' => 'required',
             // 'num_nights' => 'required',
             // 'num_rooms' => 'required',
@@ -90,19 +93,50 @@ class BookingComponent extends Component
     }
 
     protected $messages = [
-        'hotel_id' => 'Please select a hotel.'
+        // 'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
+        'hotel_id' => 'Please select a Hotel from the dropdown.',
+        'room_type_id' => 'Please select a Room Type from the dropdown.',
     ];
 
     // FORM CUSTOM METHODS
     public function updatedHotelId($value)
     {
         $hotel = Hotel::find($value);
-        $this->hotel_name = $hotel->name;
+        if ($hotel) $this->hotel_name = $hotel->name;
+        if ($hotel && $hotel->rooms->count() > 0) {
+            $rooms = RoomType::query()->where('hotel_id', $value)->get();
+            $this->roomTypeDropdown = $rooms;
+        }
+    }
+
+    public function updatedSelectedDateRange($value)
+    {
+        if ($value) {
+            [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
+            $startDate = \Carbon\Carbon::parse($startDate);
+            $endDate = \Carbon\Carbon::parse($endDate);
+            $numDays = $startDate->diffInDays($endDate);
+
+            $this->check_in_date = $startDate->toDateString();
+            $this->check_out_date = $endDate->toDateString();
+            $this->num_nights = (int)$numDays;
+
+            dump([
+                'start_date' => $this->check_in_date, 'end_date' => $this->check_out_date,
+                'num_days' => $this->num_nights,
+            ]);
+        }
     }
 
     public function testButton()
     {
         // $this->reset();
         $this->toast(type: 'success', title: 'Testing, 1, 2, 3.', position: 'toast-top', css: 'alert-success');
+    }
+
+    public function resetForm()
+    {
+        $this->reset();
+        $this->mount();
     }
 }
