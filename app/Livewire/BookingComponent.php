@@ -31,13 +31,13 @@ class BookingComponent extends Component
     public $room_type_id;
     // #[Validate]
     public $check_in_date;
-    // #[Validate]
-    public $num_nights;
-    // #[Validate]
-    public $num_rooms;
-    // #[Validate]
+    #[Validate]
+    public int $num_nights = 1;
+    #[Validate]
+    public $num_rooms = 1;
+    #[Validate]
     public int $num_pax = 1;
-    // #[Validate]
+    #[Validate]
     public $notes;
     // #[Validate]
     public $total_cost;
@@ -85,9 +85,9 @@ class BookingComponent extends Component
             'room_type_id' => 'required|numeric|gt:0',
             // 'check_in_date' => 'required',
             // 'num_nights' => 'required',
-            // 'num_rooms' => 'required',
-            // 'num_pax' => 'required|integer|min:1',
-            // 'notes' => 'nullable|required_if:num_pax,>,1',
+            'num_rooms' => 'required|numeric|min:1|max:2',
+            'num_pax' => 'required|numeric|min:1|max:5',
+            'notes' => 'nullable|required_if:num_pax,>,1',
             // 'total_cost' => 'required',
         ];
     }
@@ -96,6 +96,7 @@ class BookingComponent extends Component
         // 'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
         'room_type_id' => 'Please select a Room Type from the dropdown.',
+        'notes.required_if' => 'Please provide notes when the number of pax is greater than 1.',
     ];
 
     // FORM CUSTOM METHODS

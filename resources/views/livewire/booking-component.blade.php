@@ -15,43 +15,23 @@
                     </div>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <x-mary-select class="text-lg leading-loose" wire:model.live="hotel_id" label="Hotel Name:"
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="hotel_id" label="Hotel Name:" required
                                            option-value="id"
                                            option-label="name"
                                            placeholder="Select Hotel..."
                                            placeholder-value="0"
                                            :options="$this->hotelDropdown" />
                         </div>
+
                         <div>
-{{--                        @if($this->hotel_id>0)--}}
-                            <x-mary-select class="text-lg leading-loose" wire:model.live="room_type_id" label="Room Type:"
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="room_type_id" label="Room Type:" required
                                            option-value="id"
                                            option-label="name"
                                            placeholder="Select Room Type..."
                                            placeholder-value="0"
                                            :options="$this->roomTypeDropdown ?? []"
                                            :disabled="$this->hotel_id==0"/>
-{{--                        @endif--}}
                         </div>
-                        <div>
-                            <x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" />
-                        </div>
-                        <div>
-                            <x-mary-input type="text" label="Field 1:" placeholder="Placeholder" />
-                        </div>
-
-{{--
-                        <div x-data="datePicker">
-                            <x-mary-input type="text" name="dates" x-ref="daterange" wire:model.lazy="selected_date_range" label="Dates:" placeholder="Please select up to 7 days" />
-                        </div>
---}}
-
-{{--
-                        <div x-data="datePicker">
-                            <label class="pt-0 label label-text font-semibold">Dates:</label>
-                            <input class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select date range">
-                        </div>
---}}
 
                         <div>
                             @php
@@ -62,34 +42,36 @@
                                     'altInput' => true,
                                 ];
                             @endphp
-                            <x-mary-datepicker wire:model.lazy="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" />
+                            <x-mary-datepicker wire:model.lazy="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" required />
                         </div>
+
+                        <div>
+                            <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" label="Number of Nights:" required disabled />
+                            <x-mary-input hidden="true" wire:model="num_nights"/>
+                        </div>
+
+                        <div>
+                            {{--TODO: dropdown--}}
+                            <x-mary-input wire:model.live="num_rooms" type="number" min="1" max="2" label="Number of Rooms:" required />
+                        </div>
+
+
+                        <div>
+                            <x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="pt-0 label label-text font-semibold">
+                                <span>Notes:
+                                    @if($this->num_pax>1)
+                                        <span class="text-error">*</span>
+                                    @endif
+                                </span>
+                            </label>
+                            <x-mary-textarea wire:model.blur="notes" />
+                        </div>
+
                     </div>
-
-
-                    <script>
-                        document.addEventListener("alpine:init", () => {
-                            Alpine.data("datePicker", () => ({
-                                init() {
-                                    flatpickr(this.$refs.daterange, {
-                                        mode: "range",
-                                        minDate: "today", // Prevent selecting past dates
-                                        dateFormat: "Y-m-d",
-                                        altInput: true,
-                                        onChange: (selectedDates, dateStr, instance) => {
-                                            if (selectedDates.length === 2) {
-                                                const diff = (selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24);
-                                                if (diff > 7) {
-                                                    alert("You can only select up to 7 days.");
-                                                    instance.clear();
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                            }));
-                        });
-                    </script>
 
                     <div class="w-full flex space-x-4 mt-4">
                         <x-mary-errors class="bg-primary text-primary-content"  title="Oops!" description="There were some issues with your submission, please scroll up to fix them." icon="o-face-frown" :errors="$errors" />
@@ -97,9 +79,7 @@
 
                     <div class="w-full flex space-x-4 mt-4">
                         <x-mary-button class="btn btn-accent text-white" type="submit" spinner="save">Submit Booking</x-mary-button>
-                        {{--<x-mary-button wire:click="save">Save</x-mary-button>--}}
                         <x-mary-button wire:click="resetForm">Reset</x-mary-button>
-                        <x-mary-button wire:click="testButton">Toast test</x-mary-button>
                     </div>
                 </div>
             </form>
@@ -109,7 +89,7 @@
                 <h1 class="font-bold">Debug Info</h1>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <p>Selected hotel: {{ $this->hotel_name }} [{{ $this->hotel_id }}]</p>
-                    <p>Number of pax: {{ $this->num_pax }}</p>
+                    @if(isset($this->num_pax))<p>Number of pax: {{ $this->num_pax }}</p>@endif
                     <p>Selected date range: {{ $this->selected_date_range }}</p>
                     <p>AlpineSelected date range: <span x-text="$wire.selected_date_range"></span> </p>
                     <p>Computed: Check in Date: {{ $this->check_in_date }}</p>
