@@ -2,16 +2,18 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Forms\BookingForm;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
-class BookingForm extends Component
+class BookingComponent extends Component
 {
     use Toast;
+    public BookingForm $form;
 
     public function render()
     {
-        return view('livewire.booking-form');
+        return view('livewire.booking-component');
     }
 
     public function testButton()

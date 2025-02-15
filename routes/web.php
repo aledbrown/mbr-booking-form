@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', \App\Livewire\BookingForm::class)->name('pages.booking-form');
+Route::get('/', \App\Livewire\BookingComponent::class)->name('pages.booking-form');
 
 Route::get('/test', \App\Livewire\TestComponent::class)->name('pages.livewire-test');
 

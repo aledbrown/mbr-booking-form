@@ -1,8 +1,13 @@
 <?php
 
+use App\Models\Hotel;
+use App\Models\RoomType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+uses(RefreshDatabase::class);
+
 it('has hotels', function () {
     // Arrange
-    $hotels = Hotel::factory()->create(3);
+    $hotels = Hotel::factory(3)->create();
 
     // Act & Assert
     expect($hotels)
