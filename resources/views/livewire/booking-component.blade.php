@@ -46,7 +46,7 @@
 
                         <div>
                             <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" label="Number of Nights:" required disabled />
-                            <x-mary-input hidden="true" wire:model="num_nights"/>
+                            {{--<x-mary-input hidden="true" wire:model="num_nights"/>--}}
                         </div>
 
                         <div>
@@ -79,7 +79,7 @@
                                     @endif
                                 </span>
                             </label>
-                            <x-mary-textarea wire:model.blur="notes" />
+                            <x-mary-textarea wire:model.live.debounce="notes" />
                         </div>
 
                     </div>

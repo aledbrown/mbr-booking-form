@@ -21,18 +21,18 @@ class BookingComponent extends Component
     public Collection $roomTypeDropdown;
     public $hotel_name = '';
     public $room_type_name = '';
-    #[Validate]
-    public $selected_date_range = '';
-    public $check_out_date;
 
     // USER FORM DATA
-    // #[Validate('required')]
     #[Validate]
     public int $hotel_id = 0;
     #[Validate]
     public $room_type_id;
     #[Validate]
+    public $selected_date_range = '';
+    #[Validate]
     public $check_in_date;
+    #[Validate]
+    public $check_out_date;
     #[Validate]
     public int $num_nights = 1;
     #[Validate]
@@ -108,7 +108,8 @@ class BookingComponent extends Component
         'check_in_date' => 'Please set a Check-in Date from the Dates field above.',
         'check_out_date' => 'Please set an Check-out Date from the Dates field above.',
         'num_rooms' => 'Number of Rooms must be at least 1.',
-        'num_pax' => 'Number of Pax must be at between 1 and 5.',
+        'num_pax' => 'Number of Pax must be 1 to 5.',
+        'num_nights' => 'Number of Nights must be 1 to 7.',
     ];
 
     // FORM CUSTOM METHODS
