@@ -105,8 +105,10 @@ class BookingComponent extends Component
         'hotel_id' => 'Please select a Hotel from the dropdown.',
         'room_type_id' => 'Please select a Room Type from the dropdown.',
         'notes' => 'Please provide notes when the Number of Pax is greater than 1.',
-        'check_in_date' => 'Please select a Check-in Date for your booking.',
-        'check_out_date' => 'Please select an Check-out Date for your booking.',
+        'check_in_date' => 'Please set a Check-in Date from the Dates field above.',
+        'check_out_date' => 'Please set an Check-out Date from the Dates field above.',
+        'num_rooms' => 'Number of Rooms must be at least 1.',
+        'num_pax' => 'Number of Pax must be at between 1 and 5.',
     ];
 
     // FORM CUSTOM METHODS
@@ -144,6 +146,26 @@ class BookingComponent extends Component
             //     'num_days' => $this->num_nights,
             // ]);
         }
+    }
+
+    public function num_rooms_dropdown() : array
+    {
+        return [
+            ['value' => 1, 'title' => '1 Room'],
+            ['value' => 2, 'title' => '2 Rooms'],
+        ];
+    }
+
+    public function num_pax_dropdown() : array
+    {
+        return [
+            ['value' => 1, 'title' => '1 Pax'],
+            ['value' => 2, 'title' => '2 Pax'],
+            ['value' => 3, 'title' => '3 Pax'],
+            ['value' => 4, 'title' => '4 Pax'],
+            ['value' => 5, 'title' => '5 Pax'],
+        ];
+        // return collect(range(1, 5))->map(fn($value) => ['value' => $value, 'title' => (string) $value])->toArray();
     }
 
     public function resetForm() : void

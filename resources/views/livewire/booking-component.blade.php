@@ -41,7 +41,7 @@
                                     'dateFormat' => 'Y-m-d',
                                 ];
                             @endphp
-                            <x-mary-datepicker wire:model.live.debounce="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" required />
+                            <x-mary-datepicker wire:model.live="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" required />
                         </div>
 
                         <div>
@@ -50,13 +50,25 @@
                         </div>
 
                         <div>
-                            {{--TODO: dropdown--}}
-                            <x-mary-input wire:model.live="num_rooms" type="number" min="1" max="2" label="Number of Rooms:" required />
+                            {{--<x-mary-input wire:model.live="num_rooms" type="number" min="1" max="2" label="Number of Rooms:" required />--}}
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="num_rooms" label="Number of Rooms:" required
+                                           option-value="value"
+                                           option-label="title"
+                                           placeholder="Number of Rooms..."
+                                           placeholder-value="0"
+                                           :options="$this->num_rooms_dropdown()"/>
                         </div>
 
 
+
                         <div>
-                            <x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />
+                            {{--<x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />--}}
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="num_pax" label="Number of Pax:" required
+                                           option-value="value"
+                                           option-label="title"
+                                           placeholder="Number of Pax..."
+                                           placeholder-value="0"
+                                           :options="$this->num_pax_dropdown()"/>
                         </div>
 
                         <div class="md:col-span-2">
@@ -97,7 +109,7 @@
                     <p>Room Type: {{ $this->room_type_name }} [{{ $this->room_type_id }}]</p>
                     @if(isset($this->num_pax))<p>Number of pax: {{ $this->num_pax }}</p>@endif
                     <p>Selected date range: {{ $this->selected_date_range }}</p>
-                    <p>AlpineSelected date range: <span x-text="$wire.selected_date_range"></span> </p>
+                    {{--<p>AlpineSelected date range: <span x-text="$wire.selected_date_range"></span> </p>--}}
                     <p>Computed: Check in Date: {{ $this->check_in_date }}</p>
                     <p>Computed: Check out Date: {{ $this->check_out_date }}</p>
                     <p>Computed: Number of nights: {{ $this->num_nights }}</p>
