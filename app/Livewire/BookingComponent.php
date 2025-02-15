@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Hotel;
 use App\Models\RoomType;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -44,9 +45,7 @@ class BookingComponent extends Component
 
     public function mount()
     {
-        // $this->form->num_pax = 4;
         $this->hotelDropdown = Hotel::all();
-        // dump($this->hotelDropdown);
     }
 
     public function render()
@@ -87,7 +86,9 @@ class BookingComponent extends Component
             // 'num_nights' => 'required',
             'num_rooms' => 'required|numeric|min:1|max:2',
             'num_pax' => 'required|numeric|min:1|max:5',
-            'notes' => 'nullable|required_if:num_pax,>,1',
+            'notes' => [Rule::requiredIf(function () {
+                return $this->num_pax > 1;
+            })],
             // 'total_cost' => 'required',
         ];
     }
@@ -96,11 +97,11 @@ class BookingComponent extends Component
         // 'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
         'room_type_id' => 'Please select a Room Type from the dropdown.',
-        'notes.required_if' => 'Please provide notes when the number of pax is greater than 1.',
+        'notes' => 'Please provide notes when the Number of Pax is greater than 1.',
     ];
 
     // FORM CUSTOM METHODS
-    public function updatedHotelId($value)
+    public function updatedHotelId($value) : void
     {
         $hotel = Hotel::find($value);
         if ($hotel) $this->hotel_name = $hotel->name;
@@ -110,7 +111,7 @@ class BookingComponent extends Component
         }
     }
 
-    public function updatedSelectedDateRange($value)
+    public function updatedSelectedDateRange($value) : void
     {
         if ($value) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
@@ -129,15 +130,10 @@ class BookingComponent extends Component
         }
     }
 
-    public function testButton()
-    {
-        // $this->reset();
-        $this->toast(type: 'success', title: 'Testing, 1, 2, 3.', position: 'toast-top', css: 'alert-success');
-    }
-
-    public function resetForm()
+    public function resetForm() : void
     {
         $this->reset();
         $this->mount();
+        $this->toast(type: 'success', title: 'Booking form reset', position: 'toast-top', css: 'alert-success');
     }
 }

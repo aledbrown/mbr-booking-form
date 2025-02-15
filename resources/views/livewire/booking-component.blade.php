@@ -84,7 +84,13 @@
                 </div>
             </form>
         </div>
-        @if($this->showDebug)
+
+        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <h1 class="font-bold">TODO: Totals box here</h1>
+        </div>
+
+
+    @if($this->showDebug)
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <h1 class="font-bold">Debug Info</h1>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
