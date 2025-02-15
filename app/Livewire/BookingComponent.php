@@ -21,6 +21,7 @@ class BookingComponent extends Component
     public Collection $roomTypeDropdown;
     public $hotel_name = '';
     public $room_type_name = '';
+    #[Validate]
     public $selected_date_range = '';
     public $check_out_date;
 
@@ -47,9 +48,9 @@ class BookingComponent extends Component
     {
         $this->hotelDropdown = Hotel::all();
         if (app()->environment() !== 'local') $this->showDebug = false;
-        $this->check_in_date = today()->toDateString();
-        $this->check_out_date = today()->addDays(1)->toDateString();
-        $this->selected_date_range = today()->toDateString().' to '.today()->addDays(1)->toDateString();
+        // $this->check_in_date = today()->toDateString();
+        // $this->check_out_date = today()->addDays(1)->toDateString();
+        // $this->selected_date_range = today()->toDateString().' to '.today()->addDays(1)->toDateString();
     }
 
     public function render()
@@ -86,8 +87,9 @@ class BookingComponent extends Component
             'room_type_name' => ['string', 'max:255', [Rule::requiredIf(fn() => $this->room_type_id > 0)]],
             'hotel_id' => 'required|numeric|gt:0',
             'room_type_id' => 'required|numeric|gt:0',
-            'check_in_date' => 'required|date|after:yesterday',
-            'check_out_date' => ['date', 'after:check_in_date', [Rule::requiredIf(fn() => isset($this->check_in_date))]],
+            'selected_date_range' => 'required|string|max:255',
+            'check_in_date' => [[Rule::requiredIf(fn() => $this->room_type_id > 0)], 'date', 'after:yesterday'],
+            'check_out_date' => [[Rule::requiredIf(fn() => $this->room_type_id > 0)], 'date', 'after:check_in_date'],
             'num_nights' => 'required|numeric|min:1|max:7',
             'num_rooms' => 'required|numeric|min:1|max:2',
             'num_pax' => 'required|numeric|min:1|max:5',
@@ -97,11 +99,14 @@ class BookingComponent extends Component
     }
 
     protected $messages = [
+        'selected_date_range' => 'Please select a Date Range for your booking.',
         'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
         'room_type_name' => 'ERROR: Room Type Name fail, please contact us for support.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
         'room_type_id' => 'Please select a Room Type from the dropdown.',
         'notes' => 'Please provide notes when the Number of Pax is greater than 1.',
+        'check_in_date' => 'Please select a Check-in Date for your booking.',
+        'check_out_date' => 'Please select an Check-out Date for your booking.',
     ];
 
     // FORM CUSTOM METHODS
@@ -133,10 +138,11 @@ class BookingComponent extends Component
             $this->check_out_date = $endDate->toDateString();
             $this->num_nights = (int)$numDays;
 
-            dump([
-                'start_date' => $this->check_in_date, 'end_date' => $this->check_out_date,
-                'num_days' => $this->num_nights,
-            ]);
+            // dump([
+            //     'start_date' => $this->check_in_date,
+            //     'end_date' => $this->check_out_date,
+            //     'num_days' => $this->num_nights,
+            // ]);
         }
     }
 
