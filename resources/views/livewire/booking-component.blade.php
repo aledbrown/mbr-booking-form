@@ -10,12 +10,12 @@
                 <div class="w-full">
                     <div class="sm:flex sm:items-center">
                         <div class="sm:flex-auto">
-                            <p class="mb-3 text-sm text-gray-700">Please use the form below to book your hotel:</p>
+                            <p class="mb-3 text-sm text-gray-700">Please use the form below to book your vacation:</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <x-mary-select class="text-lg leading-loose" wire:model.live="hotel_id" label="Hotel Name:" required
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="hotel_id" icon="o-home-modern" label="Hotel Name:" required
                                            option-value="id"
                                            option-label="name"
                                            placeholder="Select Hotel..."
@@ -24,7 +24,7 @@
                         </div>
 
                         <div>
-                            <x-mary-select class="text-lg leading-loose" wire:model.live="room_type_id" label="Room Type:" required
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="room_type_id" icon="o-key" label="Room Type:" required
                                            option-value="id"
                                            option-label="name"
                                            placeholder="Select Room Type..."
@@ -41,17 +41,17 @@
                                     'dateFormat' => 'Y-m-d',
                                 ];
                             @endphp
-                            <x-mary-datepicker wire:model.live="selected_date_range" placeholder="Click to select dates" label="Dates:" :config="$config" required />
+                            <x-mary-datepicker wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" :config="$config" required />
                         </div>
 
                         <div>
-                            <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" label="Number of Nights:" required disabled />
+                            <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" icon="o-moon" label="Number of Nights:" required disabled />
                             {{--<x-mary-input hidden="true" wire:model="num_nights"/>--}}
                         </div>
 
                         <div>
                             {{--<x-mary-input wire:model.live="num_rooms" type="number" min="1" max="2" label="Number of Rooms:" required />--}}
-                            <x-mary-select class="text-lg leading-loose" wire:model.live="num_rooms" label="Number of Rooms:" required
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="num_rooms" icon="o-briefcase" label="Number of Rooms:" required
                                            option-value="value"
                                            option-label="title"
                                            placeholder="Number of Rooms..."
@@ -63,7 +63,7 @@
 
                         <div>
                             {{--<x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />--}}
-                            <x-mary-select class="text-lg leading-loose" wire:model.live="num_pax" label="Number of Pax:" required
+                            <x-mary-select class="text-lg leading-loose" wire:model.live="num_pax" icon="o-user" label="Number of Pax:" required
                                            option-value="value"
                                            option-label="title"
                                            placeholder="Number of Pax..."

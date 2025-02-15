@@ -48,6 +48,7 @@ class BookingComponent extends Component
     {
         $this->hotelDropdown = Hotel::all();
         if (app()->environment() !== 'local') $this->showDebug = false;
+        // DEFAULT FOR DATE RANGE? Thinking best not.
         // $this->check_in_date = today()->toDateString();
         // $this->check_out_date = today()->addDays(1)->toDateString();
         // $this->selected_date_range = today()->toDateString().' to '.today()->addDays(1)->toDateString();
@@ -129,8 +130,16 @@ class BookingComponent extends Component
         if ($room) $this->room_type_name = $room->name;
     }
 
+    public function updatedNumPax($value) : void
+    {
+        // when num pax changes notes may not be required but the
+        // validation could still be on screen, so re-run validation
+        $this->validate();
+    }
+
     public function updatedSelectedDateRange($value) : void
     {
+        $this->num_nights = 1;
         if ($value) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
             $startDate = \Carbon\Carbon::parse($startDate);
@@ -141,11 +150,7 @@ class BookingComponent extends Component
             $this->check_out_date = $endDate->toDateString();
             $this->num_nights = (int)$numDays;
 
-            // dump([
-            //     'start_date' => $this->check_in_date,
-            //     'end_date' => $this->check_out_date,
-            //     'num_days' => $this->num_nights,
-            // ]);
+            $this->validate();
         }
     }
 
