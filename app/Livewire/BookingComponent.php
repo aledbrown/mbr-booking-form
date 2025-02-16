@@ -48,7 +48,7 @@ class BookingComponent extends Component
     public int $num_pax = 0;
     #[Validate]
     public string $notes = '';
-    
+
     public function mount()
     {
         $this->hotelDropdown = Hotel::query()->orderBy('name')->get();
