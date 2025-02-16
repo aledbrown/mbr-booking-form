@@ -11,14 +11,8 @@ it('gives back successful response for home page', function () {
     $response->assertStatus(200);
 });
 
-it('gives back successful response for blade test page', function () {
+it('gives back successful response for thank you page', function () {
     // Act & Assert
-    get(route('pages.blade-test'))
-        ->assertOk();
-});
-
-it('gives back successful response for livewire test page', function () {
-    // Act & Assert
-    get(route('pages.livewire-test'))
+    get(route('pages.booking-form.thank-you'))
         ->assertOk();
 });
