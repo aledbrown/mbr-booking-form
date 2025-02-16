@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Hotel;
 use App\Models\RoomType;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -14,35 +15,38 @@ use Mary\Traits\Toast;
 class BookingComponent extends Component
 {
     use Toast;
-    private $showDebug = true;
+    private bool $showDebug = false;
+    private bool $showErrorBag = false;
 
     // COMPUTED PROPERTIES
+    public array $summary = [];
+    public int $total_cost = 0;
     public Collection $hotelDropdown;
     public Collection $roomTypeDropdown;
+    #[Validate]
     public $hotel_name = '';
+    #[Validate]
     public $room_type_name = '';
 
     // USER FORM DATA
     #[Validate]
     public int $hotel_id = 0;
     #[Validate]
-    public $room_type_id;
+    public int $room_type_id = 0;
     #[Validate]
-    public $selected_date_range = '';
+    public string $selected_date_range = '';
     #[Validate]
-    public $check_in_date;
+    public string $check_in_date = '';
     #[Validate]
-    public $check_out_date;
+    public string $check_out_date = '';
     #[Validate]
     public int $num_nights = 1;
     #[Validate]
-    public $num_rooms = 1;
+    public int $num_rooms = 1;
     #[Validate]
     public int $num_pax = 1;
     #[Validate]
-    public $notes;
-    // #[Validate]
-    public $total_cost = 0;
+    public string $notes = '';
 
     public function mount()
     {
@@ -57,6 +61,11 @@ class BookingComponent extends Component
     public function render()
     {
         return view('livewire.booking-component');
+    }
+
+    public function updated($property)
+    {
+        $this->calculateSummary();
     }
 
     public function save()
@@ -95,14 +104,13 @@ class BookingComponent extends Component
             'num_rooms' => 'required|numeric|min:1|max:2',
             'num_pax' => 'required|numeric|min:1|max:5',
             'notes' => [Rule::requiredIf(fn() => $this->num_pax > 1)],
-            // 'total_cost' => 'required',
         ];
     }
 
     protected $messages = [
         'selected_date_range' => 'Please select a Date Range for your booking.',
-        'hotel_name' => 'ERROR: Hotel Name fail, please contact us for support.',
-        'room_type_name' => 'ERROR: Room Type Name fail, please contact us for support.',
+        'hotel_name' => 'Please select a Hotel from the dropdown.',
+        'room_type_name' => 'Please select a Room Type from the dropdown.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
         'room_type_id' => 'Please select a Room Type from the dropdown.',
         'notes' => 'Please provide notes when the Number of Pax is greater than 1.',
@@ -114,13 +122,45 @@ class BookingComponent extends Component
     ];
 
     // FORM CUSTOM METHODS
+    public function calculateSummary(): void
+    {
+        // RESET
+        $this->summary = [];
+        $this->total_cost = 0;
+
+        // VALIDATE
+        if (!$this->validate()) return;
+        // if (empty($this->room_type_id)) return;
+        // if (empty($this->num_rooms) OR $this->num_rooms<1) return;
+        // if (empty($this->num_nights) OR $this->num_nights<1 OR $this->num_nights>7) return;
+        // if (empty($this->check_in_date)) return;
+
+        // GATHER DATA
+        $roomType = RoomType::find($this->room_type_id);
+        $startDate = \Carbon\Carbon::parse($this->check_in_date);
+
+        // CALCULATE
+        for ($i = 0; $i < $this->num_nights; $i++) {
+            $date = $startDate->copy()->addDays($i);
+            $dailyTotal = $this->num_rooms * $roomType->room_night_cost;
+            $this->total_cost += $dailyTotal;
+
+            $this->summary[] = [
+                'date' => $date->format('D, d M Y'),
+                'details' => "{$this->num_rooms} x ".Str::plural('Room', $this->num_rooms)." * {$roomType->room_night_cost} USD",
+                'daily_total' => number_format($dailyTotal, 0)." USD",
+            ];
+        }
+        // dump($this->summary);
+    }
+
     public function updatedHotelId($value) : void
     {
         $hotel = Hotel::find($value);
         if ($hotel) $this->hotel_name = $hotel->name;
         if ($hotel && $hotel->rooms->count() > 0) {
             $rooms = RoomType::query()->where('hotel_id', $value)->get();
-            $this->roomTypeDropdown = $rooms;
+            if ($rooms) $this->roomTypeDropdown = $rooms;
         }
     }
 
@@ -132,8 +172,8 @@ class BookingComponent extends Component
 
     public function updatedNumPax($value) : void
     {
-        // when num pax changes notes may not be required but the
-        // validation could still be on screen, so re-run validation
+        // validation for notes could still be on screen
+        // when num pax changes
         $this->validate();
     }
 
@@ -150,8 +190,8 @@ class BookingComponent extends Component
             $this->check_out_date = $endDate->toDateString();
             $this->num_nights = (int)$numDays;
 
-            $this->validate();
         }
+        $this->calculateSummary();
     }
 
     public function num_rooms_dropdown() : array
@@ -164,20 +204,13 @@ class BookingComponent extends Component
 
     public function num_pax_dropdown() : array
     {
-        return [
-            ['value' => 1, 'title' => '1 Pax'],
-            ['value' => 2, 'title' => '2 Pax'],
-            ['value' => 3, 'title' => '3 Pax'],
-            ['value' => 4, 'title' => '4 Pax'],
-            ['value' => 5, 'title' => '5 Pax'],
-        ];
-        // return collect(range(1, 5))->map(fn($value) => ['value' => $value, 'title' => (string) $value])->toArray();
+        return collect(range(1, 5))->map(fn($value) => ['value' => $value, 'title' => (string) $value.' Pax'])->toArray();
     }
 
     public function resetForm() : void
     {
         $this->reset();
         $this->mount();
-        $this->toast(type: 'success', title: 'Booking form reset', position: 'toast-top', css: 'alert-success');
+        $this->toast(type: 'success', title: 'Booking form reset', position: 'toast-top', css: 'alert-info');
     }
 }

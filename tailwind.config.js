@@ -28,8 +28,8 @@ export default {
                     "accent": "#a12733",
                     "neutral": "#2a323c",// light text
                     "base-100": "#ffffff", // "#1d232a" modal background
-                    "info": "#1d48e8", //#00b5ff
-                    "success": "#114e32",
+                    "info": "#021c93", //#00b5ff
+                    "success": "#059861",
                     "warning": "#a17b07",
                     "error": "#a12733",
                 },

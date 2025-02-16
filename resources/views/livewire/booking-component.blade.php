@@ -5,8 +5,8 @@
 @endpush
 <div class="pb-12">
     <div class="max-w-full mx-auto sm:px-6 lg:px-8 space-y-4">
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-            <form wire:submit="save">
+        <form wire:submit="save">
+            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="w-full">
                     <div class="sm:flex sm:items-center">
                         <div class="sm:flex-auto">
@@ -34,19 +34,11 @@
                         </div>
 
                         <div>
-                            @php
-                                $config = [
-                                    'mode' => 'range',
-                                    'minDate' => 'today',
-                                    'dateFormat' => 'Y-m-d',
-                                ];
-                            @endphp
-                            <x-mary-datepicker wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" :config="$config" required />
+                            <x-mary-datepicker wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" :config="['mode' => 'range','minDate' => 'today','dateFormat' => 'Y-m-d',]" required />
                         </div>
 
                         <div>
                             <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" icon="o-moon" label="Number of Nights:" required disabled />
-                            {{--<x-mary-input hidden="true" wire:model="num_nights"/>--}}
                         </div>
 
                         <div>
@@ -58,8 +50,6 @@
                                            placeholder-value="0"
                                            :options="$this->num_rooms_dropdown()"/>
                         </div>
-
-
 
                         <div>
                             {{--<x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />--}}
@@ -84,24 +74,41 @@
 
                     </div>
 
-                    <div class="mt-4">
-                        <x-mary-errors class="bg-primary text-primary-content"  title="Oops!" description="There were some issues with your submission, please scroll up to fix them." icon="o-face-frown" :errors="$errors" />
-                    </div>
+                    @if($this->showErrorBag)
+                        <div class="mt-4">
+                            <x-mary-errors class="bg-primary text-primary-content"  title="Oops!" description="There were some issues with your submission, please scroll up to fix them." icon="o-face-frown" :errors="$errors" />
+                        </div>
+                    @endif
+                </div>
+            </div>
 
-                    <div class="w-full flex space-x-4 mt-4">
+            <div class="mt-4 p-4 sm:p-8 grid grid-cols-1 md:grid-cols-5 bg-white shadow sm:rounded-lg">
+                <div class="md:col-span-3 items-end">
+                    @if(!empty($this->summary))
+                        <livewire:booking-summary :summary="$this->summary" :total_cost="$this->total_cost" />
+                    @endif
+                    {{--
+                    @if(!empty($this->summary))
+                        @forelse($this->summary as $day)
+                            <p>{{ $day['date'] }}, {{ $day['details'] }}, {{ $day['daily_total'] }}</p>
+                        @empty
+                            <p>No Summary</p>
+                        @endforelse
+                        <p>Total Cost: {{ $this->total_cost }} USD</p>
+                    @endif
+                    --}}
+                </div>
+                <div class="order-first mb-4 md:mb-0 md:col-span-2">
+                    <div class="w-full flex space-x-4">
                         <x-mary-button class="btn btn-accent text-white" type="submit" spinner="save">Submit Booking</x-mary-button>
                         <x-mary-button wire:click="resetForm">Reset</x-mary-button>
                     </div>
                 </div>
-            </form>
-        </div>
-
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-            <h1 class="font-bold">TODO: Totals box here</h1>
-        </div>
+            </div>
+        </form>
 
 
-    @if($this->showDebug)
+        @if($this->showDebug)
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <h1 class="font-bold">Debug Info</h1>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -109,10 +116,10 @@
                     <p>Room Type: {{ $this->room_type_name }} [{{ $this->room_type_id }}]</p>
                     @if(isset($this->num_pax))<p>Number of pax: {{ $this->num_pax }}</p>@endif
                     <p>Selected date range: {{ $this->selected_date_range }}</p>
-                    {{--<p>AlpineSelected date range: <span x-text="$wire.selected_date_range"></span> </p>--}}
-                    <p>Computed: Check in Date: {{ $this->check_in_date }}</p>
-                    <p>Computed: Check out Date: {{ $this->check_out_date }}</p>
-                    <p>Computed: Number of nights: {{ $this->num_nights }}</p>
+                    <p>Check in Date: {{ $this->check_in_date }}</p>
+                    <p>Check out Date: {{ $this->check_out_date }}</p>
+                    <p>Number of nights: {{ $this->num_nights }}</p>
+                    <p>Total Cost: ${{ number_format((int)$this->total_cost, 2) }}</p>
                 </div>
             </div>
         @endif
