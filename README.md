@@ -1,11 +1,14 @@
-### Requirements
+### About
+- An example Livewire booking form component
 
+### Requirements
 - Laravel ^11.42.1
 - PHP 8.3.16
 - SQLite
 
 ### Setup Information
 - For macOS running Laravel Herd (correct at time of writing)
+- Open Terminal.app on macOS then run the following commands
 >- cd ~/Herd
 >- git clone git@github.com:aledbrown/mbr-booking-form.git
 >- cd mbr-booking-form
