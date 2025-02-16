@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Booking;
 use App\Models\Hotel;
 use App\Models\RoomType;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -50,12 +51,8 @@ class BookingComponent extends Component
 
     public function mount()
     {
-        $this->hotelDropdown = Hotel::all();
+        $this->hotelDropdown = Hotel::query()->orderBy('name')->get();
         if (app()->environment() !== 'local') $this->showDebug = false;
-        // DEFAULT FOR DATE RANGE? Thinking best not.
-        // $this->check_in_date = today()->toDateString();
-        // $this->check_out_date = today()->addDays(1)->toDateString();
-        // $this->selected_date_range = today()->toDateString().' to '.today()->addDays(1)->toDateString();
     }
 
     public function render()
@@ -70,8 +67,7 @@ class BookingComponent extends Component
 
     public function save()
     {
-        $rules = $this->rules();
-        $validation = $this->validate($rules);
+        $this->validate($this->rules());
 
         Booking::create($this->only([
             'hotel_name',
@@ -87,7 +83,7 @@ class BookingComponent extends Component
             'total_cost',
         ]));
 
-        return $this->redirect('/test'); // TODO: thank you page
+        return $this->redirect(route('pages.booking-form.thank-you'));
     }
 
     public function rules()
@@ -137,7 +133,7 @@ class BookingComponent extends Component
 
         // GATHER DATA
         $roomType = RoomType::find($this->room_type_id);
-        $startDate = \Carbon\Carbon::parse($this->check_in_date);
+        $startDate = Carbon::parse($this->check_in_date);
 
         // CALCULATE
         for ($i = 0; $i < $this->num_nights; $i++) {
@@ -172,8 +168,7 @@ class BookingComponent extends Component
 
     public function updatedNumPax($value) : void
     {
-        // validation for notes could still be on screen
-        // when num pax changes
+        // validation for notes could still be on screen when num pax changes
         $this->validate();
     }
 
@@ -182,8 +177,8 @@ class BookingComponent extends Component
         $this->num_nights = 1;
         if ($value) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
-            $startDate = \Carbon\Carbon::parse($startDate);
-            $endDate = \Carbon\Carbon::parse($endDate);
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
             $numDays = $startDate->diffInDays($endDate);
 
             $this->check_in_date = $startDate->toDateString();

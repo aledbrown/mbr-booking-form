@@ -3,7 +3,7 @@
 
 ### Requirements
 - Laravel ^11.42.1
-- PHP 8.3.16
+- PHP 8.3.17
 - SQLite
 
 ### Setup Information
@@ -22,3 +22,6 @@
 >- php artisan migrate:refresh --seed
 >- Optional - open Herd > Sites and add SSL Certificate to mbr-booking-form.test
 >- Open http://mbr-booking-form.test
+
+### Testing (PEST)
+>- ./vendor/bin/pest
