@@ -192,6 +192,12 @@ class BookingComponent extends Component
         $this->validate();
     }
 
+    public function clearSelectedDateRange()
+    {
+        $this->selected_date_range = '';
+        $this->validate();
+    }
+
     public function num_rooms_dropdown() : array
     {
         return [

@@ -38,9 +38,7 @@
                             <x-mary-datepicker wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" :config="['mode' => 'range','minDate' => 'today','dateFormat' => 'Y-m-d',]" required />
                         </div>
 --}}
-
-
-
+                        
 {{--
                         <div x-data="datePicker">
                             <label class="pt-0 label label-text font-semibold">Dates:</label>
@@ -48,7 +46,8 @@
                         </div>
 --}}
                         <div x-data="datePicker">
-                            <x-mary-input wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select date range"/>
+                            {{--<x-mary-input wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select date range" x-on:keydown="$refs.daterange.value = ''" wire:keyup="clearSelectedDateRange()" />--}}
+                            <x-mary-input @keydown.prevent placeholder wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select date range" />
                         </div>
                         <script>
                             document.addEventListener("alpine:init", () => {
