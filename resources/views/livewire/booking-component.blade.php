@@ -33,9 +33,48 @@
                                            :disabled="$this->hotel_id==0"/>
                         </div>
 
+{{--
                         <div>
                             <x-mary-datepicker wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" :config="['mode' => 'range','minDate' => 'today','dateFormat' => 'Y-m-d',]" required />
                         </div>
+--}}
+
+
+
+{{--
+                        <div x-data="datePicker">
+                            <label class="pt-0 label label-text font-semibold">Dates:</label>
+                            <input wire:model.live="selected_date_range" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select date range"/>
+                        </div>
+--}}
+                        <div x-data="datePicker">
+                            <x-mary-input wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select date range"/>
+                        </div>
+                        <script>
+                            document.addEventListener("alpine:init", () => {
+                                Alpine.data("datePicker", () => ({
+                                    init() {
+                                        flatpickr(this.$refs.daterange, {
+                                            mode: "range",
+                                            minDate: "today", // Prevent selecting past dates
+                                            dateFormat: "Y-m-d",
+                                            onChange: (selectedDates, dateStr, instance) => {
+                                                if (selectedDates.length === 2) {
+                                                    const diff = (selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24);
+                                                    if (diff > 7) {
+                                                        alert("You can only select up to 7 days.");
+                                                        instance.clear();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }));
+                            });
+                        </script>
+
+
+
 
                         <div>
                             <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" icon="o-moon" label="Number of Nights:" required disabled />
