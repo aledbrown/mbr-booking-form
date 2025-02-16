@@ -41,14 +41,14 @@ class BookingComponent extends Component
     #[Validate]
     public string $check_out_date = '';
     #[Validate]
-    public int $num_nights = 1;
+    public int $num_nights = 0;
     #[Validate]
-    public int $num_rooms = 1;
+    public int $num_rooms = 0;
     #[Validate]
-    public int $num_pax = 1;
+    public int $num_pax = 0;
     #[Validate]
     public string $notes = '';
-
+    
     public function mount()
     {
         $this->hotelDropdown = Hotel::query()->orderBy('name')->get();
@@ -63,6 +63,7 @@ class BookingComponent extends Component
     public function updated($property)
     {
         $this->calculateSummary();
+        $this->validate();
     }
 
     public function save()
@@ -176,7 +177,7 @@ class BookingComponent extends Component
 
     public function updatedSelectedDateRange($value) : void
     {
-        $this->num_nights = 1;
+        $this->num_nights = 0;
         if ($value) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
             $startDate = Carbon::parse($startDate);
@@ -186,7 +187,6 @@ class BookingComponent extends Component
             $this->check_in_date = $startDate->toDateString();
             $this->check_out_date = $endDate->toDateString();
             $this->num_nights = (int)$numDays;
-
         }
         $this->calculateSummary();
         $this->validate();
