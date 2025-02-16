@@ -1,22 +1,21 @@
-### Setup Information
+### Requirements
 
-- Laravel 11.x
-- PHP 8.3
+- Laravel ^11.42.1
+- PHP 8.3.16
 - SQLite
 
-### Create an SQLite DB
-- touch database/database.sqlite
-- DB_CONNECTION=sqlite
-
-### PEST Testing DB
-- open phpunit.xml in project root directory
-- Set env DB_CONNECTION to 'sqlite'
-- DB_DATABASE to ':memory:'
-- without the quotes
-- these values are usually there but commented out
-
-### Running Locally
-- composer install
-- php artisan serve
-- npm run dev
-- npm run build
+### Setup Information
+- For macOS running Laravel Herd (correct at time of writing)
+>- cd ~/Herd
+>- git clone git@github.com:aledbrown/mbr-booking-form.git
+>- cd mbr-booking-form
+>- cp .env.example .env
+>- optional: set environment to production
+>- touch database/database.sqlite
+>- composer install
+>- npm install
+>- npm run build
+>- php artisan key:generate
+>- php artisan migrate:refresh --seed
+>- Optional - open Herd > Sites and add SSL Certificate to mbr-booking-form.test
+>- Open http://mbr-booking-form.test
