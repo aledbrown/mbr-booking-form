@@ -126,10 +126,6 @@ class BookingComponent extends Component
 
         // VALIDATE
         if (!$this->validate()) return;
-        // if (empty($this->room_type_id)) return;
-        // if (empty($this->num_rooms) OR $this->num_rooms<1) return;
-        // if (empty($this->num_nights) OR $this->num_nights<1 OR $this->num_nights>7) return;
-        // if (empty($this->check_in_date)) return;
 
         // GATHER DATA
         $roomType = RoomType::find($this->room_type_id);
@@ -147,23 +143,29 @@ class BookingComponent extends Component
                 'daily_total' => number_format($dailyTotal, 0)." USD",
             ];
         }
-        // dump($this->summary);
     }
 
     public function updatedHotelId($value) : void
     {
+        $this->room_type_name = '';
+        $this->room_type_id = 0;
         $hotel = Hotel::find($value);
         if ($hotel) $this->hotel_name = $hotel->name;
         if ($hotel && $hotel->rooms->count() > 0) {
             $rooms = RoomType::query()->where('hotel_id', $value)->get();
             if ($rooms) $this->roomTypeDropdown = $rooms;
         }
+        $this->calculateSummary();
+        $this->validate();
     }
 
     public function updatedRoomTypeId($value) : void
     {
+        $this->room_type_name = '';
         $room = RoomType::find($value);
         if ($room) $this->room_type_name = $room->name;
+        $this->calculateSummary();
+        $this->validate();
     }
 
     public function updatedNumPax($value) : void
@@ -187,6 +189,7 @@ class BookingComponent extends Component
 
         }
         $this->calculateSummary();
+        $this->validate();
     }
 
     public function num_rooms_dropdown() : array
