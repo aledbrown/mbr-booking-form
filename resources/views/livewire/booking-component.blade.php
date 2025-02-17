@@ -90,6 +90,7 @@
                     <div class="w-full flex space-x-4">
                         <x-mary-button class="btn btn-accent text-white" type="submit" spinner="save">Submit Booking</x-mary-button>
                         <x-mary-button wire:click="resetForm">Reset</x-mary-button>
+                        <x-mary-loading class="text-primary loading-lg" wire:dirty />
                     </div>
                 </div>
             </div>
