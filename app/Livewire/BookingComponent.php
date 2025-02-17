@@ -105,7 +105,7 @@ class BookingComponent extends Component
     }
 
     protected $messages = [
-        'selected_date_range' => 'Please select a Date Range for your booking.',
+        'selected_date_range' => 'Please select Dates for your booking.',
         'hotel_name' => 'Please select a Hotel from the dropdown.',
         'room_type_name' => 'Please select a Room Type from the dropdown.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
@@ -178,8 +178,9 @@ class BookingComponent extends Component
     public function updatedSelectedDateRange($value) : void
     {
         $this->num_nights = 0;
-        if ($value) {
+        if (strlen($value)===24) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
+            if (!$this->isValidDate($startDate) || !$this->isValidDate($endDate)) return;
             $startDate = Carbon::parse($startDate);
             $endDate = Carbon::parse($endDate);
             $numDays = $startDate->diffInDays($endDate);
@@ -192,10 +193,13 @@ class BookingComponent extends Component
         $this->validate();
     }
 
-    public function clearSelectedDateRange()
+    public function isValidDate(string $date): bool
     {
-        $this->selected_date_range = '';
-        $this->validate();
+        // Check if the date matches the format YYYY-MM-DD
+        $format = 'Y-m-d';
+        $parsedDate = \DateTime::createFromFormat($format, $date);
+
+        return $parsedDate && $parsedDate->format($format) === $date;
     }
 
     public function num_rooms_dropdown() : array
@@ -213,8 +217,9 @@ class BookingComponent extends Component
 
     public function resetForm() : void
     {
+        $this->resetValidation();
         $this->reset();
         $this->mount();
-        $this->toast(type: 'success', title: 'Booking form reset', position: 'toast-top', css: 'alert-info');
+        $this->toast(type: 'success', title: 'Booking Form Reset', position: 'toast-top', css: 'alert-info');
     }
 }

@@ -20,14 +20,6 @@
             </tr>
         @endforelse
         </tbody>
-        {{--
-        <tfoot>
-        <tr class="font-bold">
-            <td colspan="2" class="border px-4 py-2 text-right">Total Cost:</td>
-            <td class="border px-4 py-2 text-right">${{ number_format($this->total_cost, 2) }}</td>
-        </tr>
-        </tfoot>
-        --}}
     </table>
     <div class="w-full text-center mt-4">
         <p class="text-primary font-bold text-xl">Total Cost : {{ number_format($this->total_cost, 2) }} USD</p>
