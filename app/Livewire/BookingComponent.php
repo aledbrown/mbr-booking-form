@@ -178,7 +178,7 @@ class BookingComponent extends Component
     public function updatedSelectedDateRange($value) : void
     {
         $this->num_nights = 0;
-        if (strlen($value)===24) {
+        if (str_contains($value, ' to ')) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
             if (!$this->isValidDate($startDate) || !$this->isValidDate($endDate)) return;
             $startDate = Carbon::parse($startDate);
@@ -195,8 +195,8 @@ class BookingComponent extends Component
 
     public function isValidDate(string $date): bool
     {
-        // Check if the date matches the format DD-MM-YYYY
-        $format = 'd-m-Y';
+        // Check if the date matches the format 6 Mar 2025
+        $format = 'j M Y';
         $parsedDate = \DateTime::createFromFormat($format, $date);
 
         return $parsedDate && $parsedDate->format($format) === $date;
