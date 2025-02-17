@@ -81,12 +81,12 @@
             </div>
 
             <div class="mt-4 p-4 sm:p-8 grid grid-cols-1 md:grid-cols-5 bg-white shadow sm:rounded-lg">
-                <div class="md:col-span-3 items-end">
+                <div class="md:col-span-3 mb-4 md:mb-0 items-end">
                     @if(!empty($this->summary))
                         <livewire:booking-summary :summary="$this->summary" :total_cost="$this->total_cost" />
                     @endif
                 </div>
-                <div class="order-first mb-4 md:mb-0 md:col-span-2">
+                <div class="md:order-first md:col-span-2">
                     <div class="w-full flex space-x-4">
                         <x-mary-button class="btn btn-accent text-white" type="submit" spinner="save">Submit Booking</x-mary-button>
                         <x-mary-button wire:click="resetForm">Reset</x-mary-button>
