@@ -41,11 +41,11 @@ class BookingComponent extends Component
     #[Validate]
     public string $check_out_date = '';
     #[Validate]
-    public int $num_nights = 1;
+    public int $num_nights = 0;
     #[Validate]
-    public int $num_rooms = 1;
+    public int $num_rooms = 0;
     #[Validate]
-    public int $num_pax = 1;
+    public int $num_pax = 0;
     #[Validate]
     public string $notes = '';
 
@@ -63,6 +63,7 @@ class BookingComponent extends Component
     public function updated($property)
     {
         $this->calculateSummary();
+        $this->validate();
     }
 
     public function save()
@@ -104,7 +105,7 @@ class BookingComponent extends Component
     }
 
     protected $messages = [
-        'selected_date_range' => 'Please select a Date Range for your booking.',
+        'selected_date_range' => 'Please select Dates for your booking.',
         'hotel_name' => 'Please select a Hotel from the dropdown.',
         'room_type_name' => 'Please select a Room Type from the dropdown.',
         'hotel_id' => 'Please select a Hotel from the dropdown.',
@@ -126,10 +127,6 @@ class BookingComponent extends Component
 
         // VALIDATE
         if (!$this->validate()) return;
-        // if (empty($this->room_type_id)) return;
-        // if (empty($this->num_rooms) OR $this->num_rooms<1) return;
-        // if (empty($this->num_nights) OR $this->num_nights<1 OR $this->num_nights>7) return;
-        // if (empty($this->check_in_date)) return;
 
         // GATHER DATA
         $roomType = RoomType::find($this->room_type_id);
@@ -147,23 +144,29 @@ class BookingComponent extends Component
                 'daily_total' => number_format($dailyTotal, 0)." USD",
             ];
         }
-        // dump($this->summary);
     }
 
     public function updatedHotelId($value) : void
     {
+        $this->room_type_name = '';
+        $this->room_type_id = 0;
         $hotel = Hotel::find($value);
         if ($hotel) $this->hotel_name = $hotel->name;
         if ($hotel && $hotel->rooms->count() > 0) {
             $rooms = RoomType::query()->where('hotel_id', $value)->get();
             if ($rooms) $this->roomTypeDropdown = $rooms;
         }
+        $this->calculateSummary();
+        $this->validate();
     }
 
     public function updatedRoomTypeId($value) : void
     {
+        $this->room_type_name = '';
         $room = RoomType::find($value);
         if ($room) $this->room_type_name = $room->name;
+        $this->calculateSummary();
+        $this->validate();
     }
 
     public function updatedNumPax($value) : void
@@ -174,9 +177,10 @@ class BookingComponent extends Component
 
     public function updatedSelectedDateRange($value) : void
     {
-        $this->num_nights = 1;
-        if ($value) {
+        $this->num_nights = 0;
+        if (str_contains($value, ' to ')) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
+            if (!$this->isValidDate($startDate) || !$this->isValidDate($endDate)) return;
             $startDate = Carbon::parse($startDate);
             $endDate = Carbon::parse($endDate);
             $numDays = $startDate->diffInDays($endDate);
@@ -184,9 +188,18 @@ class BookingComponent extends Component
             $this->check_in_date = $startDate->toDateString();
             $this->check_out_date = $endDate->toDateString();
             $this->num_nights = (int)$numDays;
-
         }
         $this->calculateSummary();
+        $this->validate();
+    }
+
+    public function isValidDate(string $date): bool
+    {
+        // Check if the date matches the format 6 Mar 2025
+        $format = 'j M Y';
+        $parsedDate = \DateTime::createFromFormat($format, $date);
+
+        return $parsedDate && $parsedDate->format($format) === $date;
     }
 
     public function num_rooms_dropdown() : array
@@ -204,8 +217,9 @@ class BookingComponent extends Component
 
     public function resetForm() : void
     {
+        $this->resetValidation();
         $this->reset();
         $this->mount();
-        $this->toast(type: 'success', title: 'Booking form reset', position: 'toast-top', css: 'alert-info');
+        $this->toast(type: 'success', title: 'Booking Form Reset', position: 'toast-top', css: 'alert-info');
     }
 }

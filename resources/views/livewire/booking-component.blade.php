@@ -33,16 +33,15 @@
                                            :disabled="$this->hotel_id==0"/>
                         </div>
 
-                        <div>
-                            <x-mary-datepicker wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" :config="['mode' => 'range','minDate' => 'today','dateFormat' => 'Y-m-d',]" required />
+                        <div x-data="datePicker">
+                            <x-mary-input readonly autocomplete="off" placeholder wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select Dates..." />
                         </div>
 
                         <div>
-                            <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" icon="o-moon" label="Number of Nights:" required disabled />
+                            <x-mary-input wire:model.live="num_nights" type="number" min="1" max="5" icon="o-moon" label="Number of Nights:" required readonly />
                         </div>
 
                         <div>
-                            {{--<x-mary-input wire:model.live="num_rooms" type="number" min="1" max="2" label="Number of Rooms:" required />--}}
                             <x-mary-select class="text-lg leading-loose" wire:model.live="num_rooms" icon="o-briefcase" label="Number of Rooms:" required
                                            option-value="value"
                                            option-label="title"
@@ -52,7 +51,6 @@
                         </div>
 
                         <div>
-                            {{--<x-mary-input wire:model.live="num_pax" type="number" min="1" max="5" label="Number of Pax:" required />--}}
                             <x-mary-select class="text-lg leading-loose" wire:model.live="num_pax" icon="o-user" label="Number of Pax:" required
                                            option-value="value"
                                            option-label="title"
@@ -69,7 +67,7 @@
                                     @endif
                                 </span>
                             </label>
-                            <x-mary-textarea wire:model.live.debounce="notes" />
+                            <x-mary-textarea wire:model.live.debounce="notes" placeholder="Notes, e.g. additional guest names, age of children, flexible dates, room upgrade request, bedding requests, special requests, etc" rows="4" />
                         </div>
 
                     </div>
@@ -87,16 +85,6 @@
                     @if(!empty($this->summary))
                         <livewire:booking-summary :summary="$this->summary" :total_cost="$this->total_cost" />
                     @endif
-                    {{--
-                    @if(!empty($this->summary))
-                        @forelse($this->summary as $day)
-                            <p>{{ $day['date'] }}, {{ $day['details'] }}, {{ $day['daily_total'] }}</p>
-                        @empty
-                            <p>No Summary</p>
-                        @endforelse
-                        <p>Total Cost: {{ $this->total_cost }} USD</p>
-                    @endif
-                    --}}
                 </div>
                 <div class="order-first mb-4 md:mb-0 md:col-span-2">
                     <div class="w-full flex space-x-4">
@@ -106,7 +94,6 @@
                 </div>
             </div>
         </form>
-
 
         @if($this->showDebug)
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
@@ -124,4 +111,27 @@
             </div>
         @endif
     </div>
+
+    @script
+    <script>
+        Alpine.data("datePicker", () => ({
+            init() {
+                flatpickr(this.$refs.daterange, {
+                    mode: "range",
+                    minDate: "today", // Prevent selecting past dates
+                    dateFormat: "j M Y",
+                    onChange: (selectedDates, dateStr, instance) => {
+                        if (selectedDates.length === 2) {
+                            const diff = (selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24);
+                            if (diff > 7) {
+                                alert("You can only select up to 7 days.");
+                                instance.clear();
+                            }
+                        }
+                    }
+                });
+            }
+        }));
+    </script>
+    @endscript
 </div>

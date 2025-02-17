@@ -13,7 +13,7 @@
 >- git clone git@github.com:aledbrown/mbr-booking-form.git
 >- cd mbr-booking-form
 >- cp .env.example .env
->- optional: set environment to production
+>- optional: set APP_ENV=production and APP_DEBUG=false 
 >- touch database/database.sqlite
 >- composer install
 >- npm install
