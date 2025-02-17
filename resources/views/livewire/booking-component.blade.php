@@ -119,7 +119,7 @@
                 flatpickr(this.$refs.daterange, {
                     mode: "range",
                     minDate: "today", // Prevent selecting past dates
-                    dateFormat: "Y-m-d",
+                    dateFormat: "d-m-Y",
                     onChange: (selectedDates, dateStr, instance) => {
                         if (selectedDates.length === 2) {
                             const diff = (selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24);

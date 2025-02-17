@@ -195,8 +195,8 @@ class BookingComponent extends Component
 
     public function isValidDate(string $date): bool
     {
-        // Check if the date matches the format YYYY-MM-DD
-        $format = 'Y-m-d';
+        // Check if the date matches the format DD-MM-YYYY
+        $format = 'd-m-Y';
         $parsedDate = \DateTime::createFromFormat($format, $date);
 
         return $parsedDate && $parsedDate->format($format) === $date;
