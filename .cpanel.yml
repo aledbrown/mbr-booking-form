@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/amultime/
+    - /bin/cp -r * $DEPLOYPATH/bookingform/
