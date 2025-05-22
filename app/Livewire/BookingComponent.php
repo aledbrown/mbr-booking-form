@@ -16,43 +16,60 @@ use Mary\Traits\Toast;
 class BookingComponent extends Component
 {
     use Toast;
+
     private bool $showDebug = false;
+
     private bool $showErrorBag = false;
 
     // COMPUTED PROPERTIES
     public array $summary = [];
+
     public int $total_cost = 0;
+
     public Collection $hotelDropdown;
+
     public Collection $roomTypeDropdown;
+
     #[Validate]
     public $hotel_name = '';
+
     #[Validate]
     public $room_type_name = '';
 
     // USER FORM DATA
     #[Validate]
     public int $hotel_id = 0;
+
     #[Validate]
     public int $room_type_id = 0;
+
     #[Validate]
     public string $selected_date_range = '';
+
     #[Validate]
     public string $check_in_date = '';
+
     #[Validate]
     public string $check_out_date = '';
+
     #[Validate]
     public int $num_nights = 0;
+
     #[Validate]
     public int $num_rooms = 0;
+
     #[Validate]
     public int $num_pax = 0;
+
     #[Validate]
     public string $notes = '';
 
     public function mount()
     {
         $this->hotelDropdown = Hotel::query()->orderBy('name')->get();
-        if (app()->environment() !== 'local') $this->showDebug = false;
+        if (app()->environment() !== 'local') {
+            $this->showDebug = false;
+        }
     }
 
     public function render()
@@ -90,17 +107,17 @@ class BookingComponent extends Component
     public function rules()
     {
         return [
-            'hotel_name' => ['string', 'max:255', [Rule::requiredIf(fn() => $this->hotel_id > 0)]],
-            'room_type_name' => ['string', 'max:255', [Rule::requiredIf(fn() => $this->room_type_id > 0)]],
+            'hotel_name' => ['string', 'max:255', [Rule::requiredIf(fn () => $this->hotel_id > 0)]],
+            'room_type_name' => ['string', 'max:255', [Rule::requiredIf(fn () => $this->room_type_id > 0)]],
             'hotel_id' => 'required|numeric|gt:0',
             'room_type_id' => 'required|numeric|gt:0',
             'selected_date_range' => 'required|string|max:255',
-            'check_in_date' => [[Rule::requiredIf(fn() => $this->room_type_id > 0)], 'date', 'after:yesterday'],
-            'check_out_date' => [[Rule::requiredIf(fn() => $this->room_type_id > 0)], 'date', 'after:check_in_date'],
+            'check_in_date' => [[Rule::requiredIf(fn () => $this->room_type_id > 0)], 'date', 'after:yesterday'],
+            'check_out_date' => [[Rule::requiredIf(fn () => $this->room_type_id > 0)], 'date', 'after:check_in_date'],
             'num_nights' => 'required|numeric|min:1|max:7',
             'num_rooms' => 'required|numeric|min:1|max:2',
             'num_pax' => 'required|numeric|min:1|max:5',
-            'notes' => [Rule::requiredIf(fn() => $this->num_pax > 1)],
+            'notes' => [Rule::requiredIf(fn () => $this->num_pax > 1)],
         ];
     }
 
@@ -126,7 +143,9 @@ class BookingComponent extends Component
         $this->total_cost = 0;
 
         // VALIDATE
-        if (!$this->validate()) return;
+        if (! $this->validate()) {
+            return;
+        }
 
         // GATHER DATA
         $roomType = RoomType::find($this->room_type_id);
@@ -141,53 +160,61 @@ class BookingComponent extends Component
             $this->summary[] = [
                 'date' => $date->format('D, d M Y'),
                 'details' => "{$this->num_rooms} x ".Str::plural('Room', $this->num_rooms)." * {$roomType->room_night_cost} USD",
-                'daily_total' => number_format($dailyTotal, 0)." USD",
+                'daily_total' => number_format($dailyTotal, 0).' USD',
             ];
         }
     }
 
-    public function updatedHotelId($value) : void
+    public function updatedHotelId($value): void
     {
         $this->room_type_name = '';
         $this->room_type_id = 0;
         $hotel = Hotel::find($value);
-        if ($hotel) $this->hotel_name = $hotel->name;
+        if ($hotel) {
+            $this->hotel_name = $hotel->name;
+        }
         if ($hotel && $hotel->rooms->count() > 0) {
             $rooms = RoomType::query()->where('hotel_id', $value)->get();
-            if ($rooms) $this->roomTypeDropdown = $rooms;
+            if ($rooms) {
+                $this->roomTypeDropdown = $rooms;
+            }
         }
         $this->calculateSummary();
         $this->validate();
     }
 
-    public function updatedRoomTypeId($value) : void
+    public function updatedRoomTypeId($value): void
     {
         $this->room_type_name = '';
         $room = RoomType::find($value);
-        if ($room) $this->room_type_name = $room->name;
+        if ($room) {
+            $this->room_type_name = $room->name;
+        }
         $this->calculateSummary();
         $this->validate();
     }
 
-    public function updatedNumPax($value) : void
+    public function updatedNumPax($value): void
     {
         // validation for notes could still be on screen when num pax changes
         $this->validate();
     }
 
-    public function updatedSelectedDateRange($value) : void
+    public function updatedSelectedDateRange($value): void
     {
         $this->num_nights = 0;
         if (str_contains($value, ' to ')) {
             [$startDate, $endDate] = array_pad(explode(' to ', $value), 2, null);
-            if (!$this->isValidDate($startDate) || !$this->isValidDate($endDate)) return;
+            if (! $this->isValidDate($startDate) || ! $this->isValidDate($endDate)) {
+                return;
+            }
             $startDate = Carbon::parse($startDate);
             $endDate = Carbon::parse($endDate);
             $numDays = $startDate->diffInDays($endDate);
 
             $this->check_in_date = $startDate->toDateString();
             $this->check_out_date = $endDate->toDateString();
-            $this->num_nights = (int)$numDays;
+            $this->num_nights = (int) $numDays;
         }
         $this->calculateSummary();
         $this->validate();
@@ -202,7 +229,7 @@ class BookingComponent extends Component
         return $parsedDate && $parsedDate->format($format) === $date;
     }
 
-    public function num_rooms_dropdown() : array
+    public function num_rooms_dropdown(): array
     {
         return [
             ['value' => 1, 'title' => '1 Room'],
@@ -210,16 +237,16 @@ class BookingComponent extends Component
         ];
     }
 
-    public function num_pax_dropdown() : array
+    public function num_pax_dropdown(): array
     {
-        return collect(range(1, 5))->map(fn($value) => ['value' => $value, 'title' => (string) $value.' Pax'])->toArray();
+        return collect(range(1, 5))->map(fn ($value) => ['value' => $value, 'title' => (string) $value.' Pax'])->toArray();
     }
 
-    public function resetForm() : void
+    public function resetForm(): void
     {
         $this->resetValidation();
         $this->reset();
         $this->mount();
-        $this->toast(type: 'success', title: 'Booking Form Reset', position: 'toast-top', css: 'alert-info');
+        $this->toast(type: 'success', title: 'Booking Form Reset', position: 'toast-top', css: 'bg-primary text-primary-content');
     }
 }

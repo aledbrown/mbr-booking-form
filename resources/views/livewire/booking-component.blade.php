@@ -34,7 +34,7 @@
                         </div>
 
                         <div x-data="datePicker">
-                            <x-mary-input readonly autocomplete="off" placeholder wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full input input-primary" type="text" x-ref="daterange" name="dates" placeholder="Select Dates..." />
+                            <x-mary-input readonly autocomplete="off" placeholder wire:model.live="selected_date_range" icon="o-calendar-days" label="Dates:" class="w-full" type="text" x-ref="daterange" name="dates" placeholder="Select Dates..." />
                         </div>
 
                         <div>
